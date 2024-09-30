@@ -1,0 +1,417 @@
+---
+title: "STAT 4354 Midterm"
+author: "Anthony Nguyen"
+date: "2024-03-17"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = "center")
+```
+
+## 1
+
+```{r}
+#install.packages('MASS')
+#install.packages('expm')
+set.seed(777)
+library(MASS)
+library(expm)
+library(dplyr)
+library(recolorize)
+library(jpeg)
+```
+
+```{r}
+#Loading first shirt as an image
+shirts<-read.csv("bwclothingSVD/shirts.csv",header=F)
+shirts <- matrix(as.numeric(t(as.matrix(shirts)[-c(1), ])), nrow = 50, ncol = 691200)
+I <-matrix(t(shirts[1,691200:1]),nrow=720,ncol=960,byrow=F)
+image((I), col = grey(seq(0, 1, length = 691200)))
+```
+
+
+```{r}
+shirts<-read.csv("bwclothing/shirts.csv",header=F)
+shirts <- matrix(as.numeric(t(as.matrix(shirts)[-c(1), ])), nrow = 50, ncol = 691200)
+
+pca_result <- prcomp(t(shirts))
+
+total_var <- 0
+for (i in 1:50) {
+  total_var <- total_var + var(t(shirts)[,i])
+}
+
+comp_ratios <- c()
+num_vectors <- 0
+for (i in 1:50) {
+  compact_shirts <-pca_result$x[,1:i] %*% t(pca_result$rotation[,1:i])
+  comp_var <- 0
+  for (j in 1:50) {
+    comp_var <- comp_var + var(compact_shirts[,j])
+  }
+  if((comp_var/total_var) < 0.95) {
+    num_vectors <- i + 1
+  }
+  comp_ratios <- append(comp_ratios, comp_var/total_var)
+}
+plot(comp_ratios)
+num_vectors
+
+for (i in 1:num_vectors) {
+  I <-matrix(((pca_result$x[,i])),nrow=720,ncol=960,byrow=F)
+  filename <- paste("Shirts", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+
+```
+
+```{r}
+dresses<-read.csv("bwclothing/dresses.csv",header=F)
+dresses <- matrix(as.numeric(t(as.matrix(dresses)[-c(1), ])), nrow = 50, ncol = 691200)
+
+pca_result <- prcomp(t(dresses))
+
+total_var <- 0
+for (i in 1:50) {
+  total_var <- total_var + var(t(dresses)[,i])
+}
+
+comp_ratios <- c()
+
+for (i in 1:50) {
+  compact_dresses <-pca_result$x[,1:i] %*% t(pca_result$rotation[,1:i])
+  comp_var <- 0
+  for (j in 1:50) {
+    comp_var <- comp_var + var(compact_dresses[,j])
+  }
+  if((comp_var/total_var) < 0.95) {
+    print(i)
+  }
+  comp_ratios <- append(comp_ratios, comp_var/total_var)
+}
+plot(comp_ratios)
+
+for (i in 1:num_vectors) {
+  I <-t(matrix(((pca_result$x[,i])),nrow=960,ncol=720,byrow=F))
+  filename <- paste("Dresses", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+```
+
+```{r}
+pants<-read.csv("bwclothing/pants.csv",header=F)
+pants <- matrix(as.numeric(t(as.matrix(pants)[-c(1), ])), nrow = 50, ncol = 691200)
+
+pca_result <- prcomp(t(pants))
+
+total_var <- 0
+for (i in 1:50) {
+  total_var <- total_var + var(t(pants)[,i])
+}
+
+comp_ratios <- c()
+
+for (i in 1:50) {
+  compact_pants <-pca_result$x[,1:i] %*% t(pca_result$rotation[,1:i])
+  comp_var <- 0
+  for (j in 1:50) {
+    comp_var <- comp_var + var(compact_pants[,j])
+  }
+  if((comp_var/total_var) < 0.95) {
+    print(i)
+  }
+  comp_ratios <- append(comp_ratios, comp_var/total_var)
+}
+plot(comp_ratios)
+
+for (i in 1:num_vectors) {
+  I <-t(matrix(((pca_result$x[,i])),nrow=960,ncol=720,byrow=F))
+  filename <- paste("Pants", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+```
+```{r}
+outerwear<-read.csv("bwclothing/outerwear.csv",header=F)
+outerwear <- matrix(as.numeric(t(as.matrix(outerwear)[-c(1), ])), nrow = 50, ncol = 691200)
+
+pca_result <- prcomp(t(outerwear))
+
+total_var <- 0
+for (i in 1:50) {
+  total_var <- total_var + var(t(outerwear)[,i])
+}
+
+comp_ratios <- c()
+
+for (i in 1:50) {
+  compact_outerwear <-pca_result$x[,1:i] %*% t(pca_result$rotation[,1:i])
+  comp_var <- 0
+  for (j in 1:50) {
+    comp_var <- comp_var + var(compact_outerwear[,j])
+  }
+  if((comp_var/total_var) < 0.95) {
+    print(i)
+  }
+  comp_ratios <- append(comp_ratios, comp_var/total_var)
+}
+plot(comp_ratios)
+
+for (i in 1:num_vectors) {
+  I <-t(matrix(((pca_result$x[,i])),nrow=960,ncol=720,byrow=F))
+  filename <- paste("Outerwear", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+```
+
+```{r}
+shoes<-read.csv("bwclothing/shoes.csv",header=F)
+shoes <- matrix(as.numeric(t(as.matrix(shoes)[-c(1), ])), nrow = 50, ncol = 691200)
+
+pca_result <- prcomp(t(shoes))
+
+total_var <- 0
+for (i in 1:50) {
+  total_var <- total_var + var(t(shoes)[,i])
+}
+
+comp_ratios <- c()
+
+for (i in 1:50) {
+  compact_shoes <-pca_result$x[,1:i] %*% t(pca_result$rotation[,1:i])
+  comp_var <- 0
+  for (j in 1:50) {
+    comp_var <- comp_var + var(compact_shoes[,j])
+  }
+  if((comp_var/total_var) < 0.95) {
+    print(i)
+  }
+  comp_ratios <- append(comp_ratios, comp_var/total_var)
+}
+plot(comp_ratios)
+
+for (i in 1:num_vectors) {
+  I <-t(matrix(((pca_result$x[,i])),nrow=960,ncol=720,byrow=F))
+  filename <- paste("Shoes", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+```
+shorts, socks, tshirts
+```{r}
+shorts <-read.csv("bwclothing/shorts.csv",header=F)
+shorts <- matrix(as.numeric(t(as.matrix(shorts)[-c(1), ])), nrow = 49, ncol = 691200)
+
+pca_result <- prcomp(t(shorts))
+
+total_var <- 0
+for (i in 1:49) {
+  total_var <- total_var + var(t(shorts)[,i])
+}
+
+comp_ratios <- c()
+
+for (i in 1:49) {
+  compact_shorts <-pca_result$x[,1:i] %*% t(pca_result$rotation[,1:i])
+  comp_var <- 0
+  for (j in 1:49) {
+    comp_var <- comp_var + var(compact_shorts[,j])
+  }
+  if((comp_var/total_var) < 0.95) {
+    print(i)
+  }
+  comp_ratios <- append(comp_ratios, comp_var/total_var)
+}
+plot(comp_ratios)
+
+for (i in 1:num_vectors) {
+  I <-t(matrix(((pca_result$x[,i])),nrow=960,ncol=720,byrow=F))
+  filename <- paste("Shorts", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+```
+
+```{r}
+skirts <-read.csv("bwclothing/skirts.csv",header=F)
+skirts <- matrix(as.numeric(t(as.matrix(skirts)[-c(1), ])), nrow = 50, ncol = 691200)
+
+pca_result <- prcomp(t(skirts))
+
+total_var <- 0
+for (i in 1:50) {
+  total_var <- total_var + var(t(skirts)[,i])
+}
+
+comp_ratios <- c()
+
+for (i in 1:50) {
+  compact_skirts <-pca_result$x[,1:i] %*% t(pca_result$rotation[,1:i])
+  comp_var <- 0
+  for (j in 1:50) {
+    comp_var <- comp_var + var(compact_skirts[,j])
+  }
+  if((comp_var/total_var) < 0.95) {
+    print(i)
+  }
+  comp_ratios <- append(comp_ratios, comp_var/total_var)
+}
+plot(comp_ratios)
+#write.csv(pca_result$x[,1:31], file = "shirt_pca.csv")
+
+for (i in 1:num_vectors) {
+  I <-t(matrix(((pca_result$x[,i])),nrow=960,ncol=720,byrow=F))
+  filename <- paste("Skirts", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+```
+
+```{r}
+socks <-read.csv("bwclothing/socks.csv",header=F)
+socks <- matrix(as.numeric(t(as.matrix(socks)[-c(1), ])), nrow = 48, ncol = 691200)
+
+pca_result <- prcomp(t(socks))
+
+total_var <- 0
+for (i in 1:48) {
+  total_var <- total_var + var(t(socks)[,i])
+}
+
+comp_ratios <- c()
+
+for (i in 1:48) {
+  compact_socks <-pca_result$x[,1:i] %*% t(pca_result$rotation[,1:i])
+  comp_var <- 0
+  for (j in 1:48) {
+    comp_var <- comp_var + var(compact_socks[,j])
+  }
+  if((comp_var/total_var) < 0.95) {
+    print(i)
+  }
+  comp_ratios <- append(comp_ratios, comp_var/total_var)
+}
+plot(comp_ratios)
+
+for (i in 1:num_vectors) {
+  I <-t(matrix(((pca_result$x[,i])),nrow=960,ncol=720,byrow=F))
+  filename <- paste("Socks", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+```
+
+```{r}
+tshirts <-read.csv("bwclothing/tshirts.csv",header=F)
+tshirts <- matrix(as.numeric(t(as.matrix(tshirts)[-c(1), ])), nrow = 49, ncol = 691200)
+
+pca_result <- prcomp(t(tshirts))
+
+total_var <- 0
+for (i in 1:49) {
+  total_var <- total_var + var(t(tshirts)[,i])
+}
+
+comp_ratios <- c()
+
+for (i in 1:49) {
+  compact_tshirts <-pca_result$x[,1:i] %*% t(pca_result$rotation[,1:i])
+  comp_var <- 0
+  for (j in 1:49) {
+    comp_var <- comp_var + var(compact_tshirts[,j])
+  }
+  if((comp_var/total_var) < 0.95) {
+    print(i)
+  }
+  comp_ratios <- append(comp_ratios, comp_var/total_var)
+}
+plot(comp_ratios)
+
+for (i in 1:num_vectors) {
+  I <-t(matrix(((pca_result$x[,i])),nrow=960,ncol=720,byrow=F))
+  filename <- paste("Tshirts", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+```
+
+```{r}
+underwear <-read.csv("bwclothing/underwear.csv",header=F)
+underwear <- matrix(as.numeric(t(as.matrix(underwear)[-c(1), ])), nrow = 49, ncol = 691200)
+
+pca_result <- prcomp(t(underwear))
+
+total_var <- 0
+for (i in 1:49) {
+  total_var <- total_var + var(t(underwear)[,i])
+}
+
+comp_ratios <- c()
+
+for (i in 1:49) {
+  compact_underwear <-pca_result$x[,1:i] %*% t(pca_result$rotation[,1:i])
+  comp_var <- 0
+  for (j in 1:49) {
+    comp_var <- comp_var + var(compact_underwear[,j])
+  }
+  if((comp_var/total_var) < 0.95) {
+    print(i)
+  }
+  comp_ratios <- append(comp_ratios, comp_var/total_var)
+}
+plot(comp_ratios)
+
+for (i in 1:num_vectors) {
+  I <-t(matrix(((pca_result$x[,i])),nrow=960,ncol=720,byrow=F))
+  filename <- paste("Underwear", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+```
+```{r}
+for (i in 1:50) {
+  I <-matrix(rev(shirts[i,691200:1]),nrow=720,ncol=960,byrow=F)
+  filename <- paste("Shirt", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+for (i in 1:50) {
+  I <-t(matrix(rev(dresses[i,691200:1]),nrow=960,ncol=720,byrow=F))
+  filename <- paste("Dresses", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+for (i in 1:50) {
+  I <-t(matrix(rev(pants[i,691200:1]),nrow=960,ncol=720,byrow=F))
+  filename <- paste("Pants", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+for (i in 1:50) {
+  I <-t(matrix(rev(shoes[i,691200:1]),nrow=960,ncol=720,byrow=F))
+  filename <- paste("Shoes", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+for (i in 1:49) {
+  I <-t(matrix(rev(shorts[i,691200:1]),nrow=960,ncol=720,byrow=F))
+  filename <- paste("Shorts", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+for (i in 1:50) {
+  I <-t(matrix(rev(skirts[i,691200:1]),nrow=960,ncol=720,byrow=F))
+  filename <- paste("Skirts", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+for (i in 1:48) {
+  I <-t(matrix(rev(socks[i,691200:1]),nrow=960,ncol=720,byrow=F))
+  filename <- paste("Socks", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+for (i in 1:49) {
+  I <-t(matrix(rev(tshirts[i,691200:1]),nrow=960,ncol=720,byrow=F))
+  filename <- paste("Tshirts", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+for (i in 1:49) {
+  I <-t(matrix(rev(underwear[i,691200:1]),nrow=960,ncol=720,byrow=F))
+  filename <- paste("Underwear", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+for (i in 1:50) {
+  I <-t(matrix(rev(outerwear[i,691200:1]),nrow=960,ncol=720,byrow=F))
+  filename <- paste("Outerwear", i, ".jpeg", sep = "")
+  writeJPEG(t(I), target = filename, quality = 1)
+}
+```
+

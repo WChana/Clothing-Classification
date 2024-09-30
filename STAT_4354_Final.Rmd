@@ -1,0 +1,64 @@
+---
+title: "STAT 4354 Final Project"
+author: "Spencer Ng"
+date: "2024-05-11"
+output: pdf_document
+---
+
+```{r}
+library(recolorize)
+library(data.table)
+
+img <- readImage("test.jpg")
+
+randimg <- matrix(, nrow = nrow(img), ncol = ncol(img))
+
+for (i in 1:nrow(img)) {
+  for (j in 1:ncol(img)) {
+    randimg[i, j] <- svd(c(img[i, j, 1], img[i, j, 2], img[i, j, 3]))$d / 1.7321
+  }
+}
+
+new_image <- .2126 * img[,,1] + .7152 * img[,,2] + .0722 * img[,,3]
+
+layout(matrix(1:3, nrow = 1))
+par(mar = c(0, 0, 2, 0))
+plotImageArray(img, main = "RGB image")
+plotImageArray(randimg, main = "Luminance Method")
+plotImageArray(new_image, main = "SVD Method")
+
+identical(new_image, randimg)
+max(abs(new_image)
+
+
+file_list <- list.files(path = "D:/Users/ng_sp/Downloads/outerwear")
+
+data <- matrix(, nrow = 691200, ncol = length(file_list))
+
+for (i in 1:length(file_list)){
+  temp <- readImage(file_list[i])
+  temp <- .2126 * temp[,,1] + .7152 * temp[,,2] + .0722 * temp[,,3]
+  temp <- as.vector(temp)
+  data[, i] <- temp
+}
+
+fwrite(data, "outerwear_luminance.csv")
+
+
+data <- matrix(, nrow = 691200, ncol = length(file_list))
+
+for (i in 1:length(file_list)){
+  temp <- readImage(file_list[i])
+  print(i)
+  
+  for (j in 1:960) {
+    for (k in 1:720) {
+      data[(j - 1) * 720 + k, i] <- svd(c(temp[j, k, 1], temp[j, k, 2], temp[j, k, 3]))$d / 1.7321
+    }
+  }
+}
+
+
+fwrite(data, "outerwear.csv")
+
+```
